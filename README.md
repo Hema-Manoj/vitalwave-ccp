@@ -55,7 +55,7 @@ VitalWave is an IoT-based Ambulance-to-Hospital Real-Time Patient Monitoring pla
 
 Add these to your Vercel project or `.env.local`:
 
-```
+\`\`\`
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
 NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
@@ -63,14 +63,14 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-```
+\`\`\`
 
 ### Installation
 
-```bash
+\`\`\`bash
 npm install
 npm run dev
-```
+\`\`\`
 
 Open http://localhost:3000
 
@@ -93,7 +93,7 @@ Open http://localhost:3000
 
 ## Database Structure
 
-```
+\`\`\`
 ├── ambulances/
 │   └── {userId}
 │       ├── ambulanceId
@@ -114,7 +114,7 @@ Open http://localhost:3000
         ├── vitals
         ├── status
         └── ...
-```
+\`\`\`
 
 ## License
 
