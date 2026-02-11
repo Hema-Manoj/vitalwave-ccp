@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/auth-context"
+import { FirebaseProvider } from "@/lib/firebase-provider"
 import { ThemeProvider } from "@/lib/theme-provider"
 import "./globals.css"
 
@@ -41,7 +42,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <FirebaseProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </FirebaseProvider>
         </ThemeProvider>
         <Analytics />
       </body>

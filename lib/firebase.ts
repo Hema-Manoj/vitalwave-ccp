@@ -1,6 +1,5 @@
-import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
-import { getAuth, type Auth } from "firebase/auth"
-import { getDatabase, type Database } from "firebase/database"
+import type { Auth } from "firebase/auth"
+import type { Database } from "firebase/database"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,27 +11,42 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-let _app: FirebaseApp | undefined
 let _auth: Auth | undefined
 let _db: Database | undefined
+let _initPromise: Promise<void> | undefined
 
-function getFirebaseApp(): FirebaseApp {
-  if (!_app) {
-    _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
+/**
+ * Initialises Firebase using dynamic imports so that the firebase/* modules
+ * are only loaded at runtime on the client (never during SSR / module evaluation).
+ * Calling it multiple times is safe – the same promise is reused.
+ */
+export function initFirebase(): Promise<void> {
+  if (!_initPromise) {
+    _initPromise = (async () => {
+      const { initializeApp, getApps } = await import("firebase/app")
+      const app =
+        getApps().length === 0
+          ? initializeApp(firebaseConfig)
+          : getApps()[0]
+
+      const { getAuth } = await import("firebase/auth")
+      const { getDatabase } = await import("firebase/database")
+
+      _auth = getAuth(app)
+      _db = getDatabase(app)
+    })()
   }
-  return _app
+  return _initPromise
 }
 
+/** Synchronous getter – only call after initFirebase() has resolved. */
 export function getFirebaseAuth(): Auth {
-  if (!_auth) {
-    _auth = getAuth(getFirebaseApp())
-  }
+  if (!_auth) throw new Error("Firebase not initialised – wrap your app in <FirebaseProvider>")
   return _auth
 }
 
+/** Synchronous getter – only call after initFirebase() has resolved. */
 export function getFirebaseDatabase(): Database {
-  if (!_db) {
-    _db = getDatabase(getFirebaseApp())
-  }
+  if (!_db) throw new Error("Firebase not initialised – wrap your app in <FirebaseProvider>")
   return _db
 }
