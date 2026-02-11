@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ref, onValue } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { Patient } from "@/lib/types"
 import { getVitalStatus } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -34,7 +34,7 @@ export default function HospitalPatientDetailPage({ params }: { params: Promise<
 
   useEffect(() => {
     if (user) {
-      const patientRef = ref(database, `patients/${resolvedParams.id}`)
+      const patientRef = ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`)
       const unsubscribe = onValue(patientRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val()

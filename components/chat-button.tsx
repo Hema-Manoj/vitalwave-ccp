@@ -5,7 +5,7 @@ import { MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ref, onValue } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 
 interface ChatButtonProps {
   userId: string
@@ -17,7 +17,7 @@ export function ChatButton({ userId, userRole, onClick }: ChatButtonProps) {
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
-    const messagesRef = ref(database, "messages")
+    const messagesRef = ref(getFirebaseDatabase(), "messages")
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       if (snapshot.exists()) {
         const messages = Object.values(snapshot.val()) as any[]

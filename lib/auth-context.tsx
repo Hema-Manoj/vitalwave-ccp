@@ -1,10 +1,9 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext, useEffect, useState } from "react"
 import { type User, onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth"
-import { auth } from "./firebase"
+import { getFirebaseAuth } from "./firebase"
 import { useRouter } from "next/navigation"
 
 type UserRole = "ambulance" | "hospital" | null
@@ -30,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(getFirebaseAuth(), async (user) => {
       setUser(user)
 
       if (user) {
@@ -49,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      await firebaseSignOut(auth)
+      await firebaseSignOut(getFirebaseAuth())
       localStorage.removeItem("userRole")
       router.push("/")
     } catch (error) {

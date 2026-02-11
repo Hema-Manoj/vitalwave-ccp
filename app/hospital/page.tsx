@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ref, onValue } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { Hospital, Patient } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,7 +33,7 @@ export default function HospitalDashboard() {
   useEffect(() => {
     if (user) {
       // Load hospital profile
-      const hospitalRef = ref(database, `hospitals/${user.uid}`)
+      const hospitalRef = ref(getFirebaseDatabase(), `hospitals/${user.uid}`)
       const unsubscribe = onValue(hospitalRef, (snapshot) => {
         if (snapshot.exists()) {
           setHospital(snapshot.val())
@@ -41,7 +41,7 @@ export default function HospitalDashboard() {
       })
 
       // Load all incoming patients
-      const patientsRef = ref(database, `patients`)
+      const patientsRef = ref(getFirebaseDatabase(), `patients`)
       const patientsUnsubscribe = onValue(patientsRef, (snapshot) => {
         if (snapshot.exists()) {
           const allPatients = Object.values(snapshot.val()) as Patient[]

@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ref, onValue } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { AmbulanceProfile, Patient } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -27,14 +27,14 @@ export default function AmbulanceDetailPage({ params }: { params: Promise<{ id: 
 
   useEffect(() => {
     if (user) {
-      const ambulanceRef = ref(database, `ambulances/${resolvedParams.id}`)
+      const ambulanceRef = ref(getFirebaseDatabase(), `ambulances/${resolvedParams.id}`)
       const unsubscribe = onValue(ambulanceRef, (snapshot) => {
         if (snapshot.exists()) {
           setAmbulance(snapshot.val())
         }
       })
 
-      const patientsRef = ref(database, "patients")
+      const patientsRef = ref(getFirebaseDatabase(), "patients")
       const patientsUnsubscribe = onValue(patientsRef, (snapshot) => {
         if (snapshot.exists()) {
           const allPatients = Object.values(snapshot.val()) as Patient[]

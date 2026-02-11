@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ref, onValue, update } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { Patient } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -45,7 +45,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     if (user) {
-      const patientRef = ref(database, `patients/${resolvedParams.id}`)
+      const patientRef = ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`)
       const unsubscribe = onValue(patientRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val()
@@ -62,13 +62,13 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
 
       const vitalsInterval = setInterval(async () => {
         const snapshot = await onValue(
-          ref(database, `patients/${resolvedParams.id}`),
+          ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`),
           (snap) => {
             if (snap.exists() && snap.val().vitalReadingStarted) {
               const heartRate = 60 + Math.floor(Math.random() * 40)
               const spo2 = 92 + Math.floor(Math.random() * 8)
 
-              update(ref(database, `patients/${resolvedParams.id}/vitals`), {
+              update(ref(getFirebaseDatabase(), `patients/${resolvedParams.id}/vitals`), {
                 heartRate,
                 spo2,
                 timestamp: Date.now(),
@@ -89,7 +89,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const handleSave = async () => {
     if (!patient) return
 
-    await update(ref(database, `patients/${resolvedParams.id}`), {
+    await update(ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`), {
       name: formData.name || undefined,
       age: formData.age ? Number.parseInt(formData.age) : undefined,
       gender: formData.gender || undefined,
@@ -103,7 +103,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const handleStartTrip = async () => {
     if (!patient) return
 
-    await update(ref(database, `patients/${resolvedParams.id}`), {
+    await update(ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`), {
       status: "in-transit",
       tripStartTime: Date.now(),
       distance: 5.2,
@@ -114,7 +114,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const handleEndTrip = async () => {
     if (!patient) return
 
-    await update(ref(database, `patients/${resolvedParams.id}`), {
+    await update(ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`), {
       status: "arrived",
       tripEndTime: Date.now(),
       distance: 0,
@@ -130,7 +130,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
     const heartRate = 60 + Math.floor(Math.random() * 40)
     const spo2 = 92 + Math.floor(Math.random() * 8)
 
-    await update(ref(database, `patients/${resolvedParams.id}`), {
+    await update(ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`), {
       vitalReadingStarted: true,
       vitals: {
         heartRate,
@@ -143,7 +143,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const handleReleasePatient = async () => {
     if (!patient) return
 
-    await update(ref(database, `patients/${resolvedParams.id}`), {
+    await update(ref(getFirebaseDatabase(), `patients/${resolvedParams.id}`), {
       status: "completed",
       tripEndTime: Date.now(),
       releasedAt: Date.now(),

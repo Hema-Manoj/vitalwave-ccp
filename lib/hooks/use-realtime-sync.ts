@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ref, onValue, off } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { Patient, AmbulanceProfile } from "@/lib/types"
 
 export function useRealtimePatients(ambulanceId?: string) {
@@ -10,7 +10,7 @@ export function useRealtimePatients(ambulanceId?: string) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const patientsRef = ref(database, "patients")
+    const patientsRef = ref(getFirebaseDatabase(), "patients")
 
     const unsubscribe = onValue(
       patientsRef,
@@ -45,7 +45,7 @@ export function useRealtimePatient(patientId: string) {
   useEffect(() => {
     if (!patientId) return
 
-    const patientRef = ref(database, `patients/${patientId}`)
+    const patientRef = ref(getFirebaseDatabase(), `patients/${patientId}`)
 
     const unsubscribe = onValue(
       patientRef,
@@ -78,7 +78,7 @@ export function useRealtimeAmbulance(ambulanceId: string) {
   useEffect(() => {
     if (!ambulanceId) return
 
-    const ambulanceRef = ref(database, `ambulances/${ambulanceId}`)
+    const ambulanceRef = ref(getFirebaseDatabase(), `ambulances/${ambulanceId}`)
 
     const unsubscribe = onValue(
       ambulanceRef,

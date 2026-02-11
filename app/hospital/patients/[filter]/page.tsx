@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ref, onValue } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { Patient } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Activity } from "lucide-react"
@@ -25,7 +25,7 @@ export default function FilteredPatientsPage({ params }: { params: Promise<{ fil
 
   useEffect(() => {
     if (user) {
-      const patientsRef = ref(database, "patients")
+      const patientsRef = ref(getFirebaseDatabase(), "patients")
       const unsubscribe = onValue(patientsRef, (snapshot) => {
         if (snapshot.exists()) {
           const allPatients = Object.values(snapshot.val()) as Patient[]

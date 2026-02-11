@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { ref, set } from "firebase/database"
-import { auth, database } from "@/lib/firebase"
+import { getFirebaseAuth, getFirebaseDatabase } from "@/lib/firebase"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,13 +52,13 @@ export default function AmbulanceSignupPage() {
 
     try {
       console.log("[v0] Starting signup process...")
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      const userCredential = await createUserWithEmailAndPassword(getFirebaseAuth(), formData.email, formData.password)
       const userId = userCredential.user.uid
       console.log("[v0] User created successfully:", userId)
 
       // Save ambulance profile to database
       console.log("[v0] Saving ambulance profile to database...")
-      await set(ref(database, `ambulances/${userId}`), {
+      await set(ref(getFirebaseDatabase(), `ambulances/${userId}`), {
         id: userId,
         ambulanceId: formData.ambulanceId,
         vehicleNumber: formData.vehicleNumber,

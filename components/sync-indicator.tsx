@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ref, onValue } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import { Wifi, WifiOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -15,7 +15,7 @@ export function SyncIndicator({ className }: SyncIndicatorProps) {
   const [lastSync, setLastSync] = useState<Date>(new Date())
 
   useEffect(() => {
-    const connectedRef = ref(database, ".info/connected")
+    const connectedRef = ref(getFirebaseDatabase(), ".info/connected")
 
     const unsubscribe = onValue(connectedRef, (snapshot) => {
       const connected = snapshot.val() === true

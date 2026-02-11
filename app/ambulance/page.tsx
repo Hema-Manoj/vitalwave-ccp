@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ref, onValue, set, push } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { AmbulanceProfile, Patient } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -51,14 +51,14 @@ export default function AmbulanceDashboard() {
 
   useEffect(() => {
     if (user) {
-      const profileRef = ref(database, `ambulances/${user.uid}`)
+      const profileRef = ref(getFirebaseDatabase(), `ambulances/${user.uid}`)
       const unsubscribe = onValue(profileRef, (snapshot) => {
         if (snapshot.exists()) {
           setProfile(snapshot.val())
         }
       })
 
-      const patientsRef = ref(database, `patients`)
+      const patientsRef = ref(getFirebaseDatabase(), `patients`)
       const patientsUnsubscribe = onValue(patientsRef, (snapshot) => {
         if (snapshot.exists()) {
           const allPatients = Object.values(snapshot.val()) as Patient[]
@@ -90,7 +90,7 @@ export default function AmbulanceDashboard() {
     if (!user || !newPatientForm.name.trim()) return
 
     const patientId = `PAT-${Date.now().toString().slice(-6)}`
-    const newPatientRef = push(ref(database, "patients"))
+    const newPatientRef = push(ref(getFirebaseDatabase(), "patients"))
 
     const newPatient: Patient = {
       id: newPatientRef.key!,
@@ -119,7 +119,7 @@ export default function AmbulanceDashboard() {
     if (!user || !profile) return
 
     const newStatus = profile.status === "available" ? "on-trip" : "available"
-    await set(ref(database, `ambulances/${user.uid}/status`), newStatus)
+    await set(ref(getFirebaseDatabase(), `ambulances/${user.uid}/status`), newStatus)
   }
 
   if (loading || !user || !profile) {

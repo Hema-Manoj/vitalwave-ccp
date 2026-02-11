@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { ref, onValue, push, set, update } from "firebase/database"
-import { database } from "@/lib/firebase"
+import { getFirebaseDatabase } from "@/lib/firebase"
 import type { ChatMessage } from "@/lib/types"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,7 @@ export function ChatDialog({ open, onOpenChange, userId, userRole }: ChatDialogP
   useEffect(() => {
     if (userRole === "hospital") {
       // Load all ambulances
-      const ambulancesRef = ref(database, "ambulances")
+      const ambulancesRef = ref(getFirebaseDatabase(), "ambulances")
       const unsubscribe = onValue(ambulancesRef, (snapshot) => {
         if (snapshot.exists()) {
           const ambulanceList = Object.entries(snapshot.val()).map(([id, data]: [string, any]) => ({
@@ -42,7 +42,7 @@ export function ChatDialog({ open, onOpenChange, userId, userRole }: ChatDialogP
       return () => unsubscribe()
     } else {
       // Load all hospitals
-      const hospitalsRef = ref(database, "hospitals")
+      const hospitalsRef = ref(getFirebaseDatabase(), "hospitals")
       const unsubscribe = onValue(hospitalsRef, (snapshot) => {
         if (snapshot.exists()) {
           const hospitalList = Object.entries(snapshot.val()).map(([id, data]: [string, any]) => ({
@@ -58,7 +58,7 @@ export function ChatDialog({ open, onOpenChange, userId, userRole }: ChatDialogP
 
   useEffect(() => {
     if (selectedContact) {
-      const messagesRef = ref(database, "messages")
+      const messagesRef = ref(getFirebaseDatabase(), "messages")
       const unsubscribe = onValue(messagesRef, (snapshot) => {
         if (snapshot.exists()) {
           const allMessages = Object.entries(snapshot.val()).map(([id, data]: [string, any]) => ({
@@ -78,7 +78,7 @@ export function ChatDialog({ open, onOpenChange, userId, userRole }: ChatDialogP
           // Mark messages as read
           filteredMessages.forEach((msg) => {
             if (msg.receiverId === userId && !msg.read) {
-              update(ref(database, `messages/${msg.id}`), { read: true })
+              update(ref(getFirebaseDatabase(), `messages/${msg.id}`), { read: true })
             }
           })
 
@@ -95,7 +95,7 @@ export function ChatDialog({ open, onOpenChange, userId, userRole }: ChatDialogP
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedContact) return
 
-    const messageRef = push(ref(database, "messages"))
+    const messageRef = push(ref(getFirebaseDatabase(), "messages"))
     const message: ChatMessage = {
       id: messageRef.key!,
       senderId: userId,
@@ -111,7 +111,7 @@ export function ChatDialog({ open, onOpenChange, userId, userRole }: ChatDialogP
   }
 
   const getUnreadCount = (contactId: string) => {
-    const messagesRef = ref(database, "messages")
+    const messagesRef = ref(getFirebaseDatabase(), "messages")
     let count = 0
     onValue(
       messagesRef,
